@@ -19,13 +19,6 @@ pipeline {
                 sh 'python -m py_compile app.py'
             }
         }
-        stage('Code Quality') {
-            steps {
-                withSonarQubeEnv('MySonarQubeServer') {
-                    sh 'sonar-scanner'
-                }
-            }
-        }
 
         stage('Unit Test') {
             steps {
@@ -52,12 +45,6 @@ pipeline {
             }
         }
 
-        Stage('Approval for QA') {
-            steps {
-                input messages: "Need approval to deploy the QA"
-            }
-        }
-
         stage('Deploy to QA') {
             steps {
                 ansiblePlaybook(
@@ -67,24 +54,12 @@ pipeline {
             }
         }
 
-        stage('Approval for UAT') {
-            steps {
-                input messages: "Need approval to deploy UAT"
-            }
-        }
-
         stage('Deploy to UAT') {
             steps {
                 ansiblePlaybook(
                     playbook: 'ansible/deploy.yml',
                     inventory: 'ansible/inventory/uat.ini'
                     )
-            }
-        }
-
-        stage('Approval for Prod') {
-            steps {
-                input messages: "Final approval for Pord?"
             }
         }
 
